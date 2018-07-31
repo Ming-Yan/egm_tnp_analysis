@@ -20,6 +20,7 @@ parser.add_argument('--doPlot'     , action='store_true'  , help = 'plotting')
 parser.add_argument('--sumUp'      , action='store_true'  , help = 'sum up efficiencies')
 parser.add_argument('--iBin'       , dest = 'binNumber'   , type = int,  default=-1, help='bin number (to refit individual bin)')
 parser.add_argument('--flag'       , default = None       , help ='WP to test')
+parser.add_argument('--lum'       , type = float, default = 2.5        , help ='luminosity')
 parser.add_argument('settings'     , default = None       , help = 'setting file [mandatory]')
 
 
@@ -95,9 +96,9 @@ if args.createHists:
         if sampleType == args.sample or args.sample == 'all' :
             print 'creating histogram for sample '
             sample.dump()
-            var = { 'name' : 'pair_mass', 'nbins' : 80, 'min' : 50, 'max': 130 }
+            var = { 'name' : 'pair_mass', 'nbins' : 60, 'min' : 60, 'max': 120 }
             if sample.mcTruth:
-                var = { 'name' : 'pair_mass', 'nbins' : 80, 'min' : 50, 'max': 130 }
+                var = { 'name' : 'pair_mass', 'nbins' : 60, 'min' : 60, 'max': 120 }
             tnpRoot.makePassFailHistograms( sample, tnpConf.flags[args.flag], tnpBins, var )
 
     sys.exit(0)
@@ -191,7 +192,7 @@ if args.sumUp:
 
     effis = None
     effFileName ='%s/egammaEffi.txt' % outputDirectory 
-    fOut = open( effFileName,'w')
+    fOut = open( effFileName,'r')
     
     for ib in range(len(tnpBins['bins'])):
         effis = tnpRoot.getAllEffi( info, tnpBins['bins'][ib] )
@@ -202,25 +203,25 @@ if args.sumUp:
         if ib == 0 :
             astr = '### var1 : %s' % v1Range[1]
             print astr
-            fOut.write( astr + '\n' )
+            #  fOut.write( astr + '\n' )
             astr = '### var2 : %s' % v2Range[1]
             print astr
-            fOut.write( astr + '\n' )
+         #   fOut.write( astr + '\n' )
             
-        astr =  '%+8.3f\t%+8.3f\t%+8.3f\t%+8.3f\t%5.3f\t%5.3f\t%5.3f\t%5.3f\t%5.3f\t%5.3f\t%5.3f\t%5.3f' % (
-            float(v1Range[0]), float(v1Range[2]),
-            float(v2Range[0]), float(v2Range[2]),
-            effis['dataNominal'][0],effis['dataNominal'][1],
-            effis['mcNominal'  ][0],effis['mcNominal'  ][1],
-            effis['dataAltBkg' ][0],
-            effis['dataAltSig' ][0],
-            effis['mcAlt' ][0],
-            effis['tagSel'][0],
-            )
-        print astr
-        fOut.write( astr + '\n' )
+            astr =  '%+8.3f\t%+8.3f\t%+8.3f\t%+8.3f\t%5.3f\t%5.3f\t%5.3f\t%5.3f\t%5.3f\t%5.3f\t%5.3f\t%5.3f' % (
+                float(v1Range[0]), float(v1Range[2]),
+                float(v2Range[0]), float(v2Range[2]),
+                effis['dataNominal'][0],effis['dataNominal'][1],
+                effis['mcNominal'  ][0],effis['mcNominal'  ][1],
+                effis['dataAltBkg' ][0],
+                effis['dataAltSig' ][0],
+                effis['mcAlt' ][0],
+                effis['tagSel'][0],
+                  )
+            print astr
+        #fOut.write( astr + '\n' )
     fOut.close()
-
+    sampleToFit.lumi = args.lum
     print 'Effis saved in file : ',  effFileName
     import libPython.EGammaID_scaleFactors as egm_sf
     egm_sf.doEGM_SFs(effFileName,sampleToFit.lumi)

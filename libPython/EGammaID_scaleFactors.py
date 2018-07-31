@@ -113,7 +113,7 @@ def EffiGraph1D(effDataList, effMCList, sfList ,nameout, xAxis = 'pT', yAxis = '
     listOfMC      = []
 
     xMin = 10
-    xMax = 200
+    xMax = 500
     if 'pT' in xAxis or 'pt' in xAxis:
         p1.SetLogx()
         p2.SetLogx()    
@@ -294,9 +294,11 @@ def doEGM_SFs(filein, lumi, axis = ['pT','eta'] ):
         numbers = modifiedLine.split('\t')
 
         if len(numbers) > 0 and isFloat(numbers[0]):
+            print float(numbers[2])
+            print float(numbers[3])
             etaKey = ( float(numbers[0]), float(numbers[1]) )
-            ptKey  = ( float(numbers[2]), min(500,float(numbers[3])) )
-        
+            ptKey  = ( float(numbers[2]), float(numbers[3]) )
+            
             myeff = efficiency(ptKey,etaKey,
                                float(numbers[4]),float(numbers[5]),float(numbers[6] ),float(numbers[7] ),
                                float(numbers[8]),float(numbers[9]),float(numbers[10]),float(numbers[11]) )
