@@ -287,8 +287,12 @@ class efficiencyList:
                             print " ---- efficiencyList: I did not find -eta bin!!!"
                         else:                        
                             averageMC   = (effPlus.effMC   + effMinus.effMC  )/2.
+                            
                         ### so this is h2D bin is inside the bining used by e/gamma POG
-                        h2.SetBinContent(ix,iy, self.effList[ptBin][etaBin].effData      / self.effList[ptBin][etaBin].effMC)
+                        if(self.effList[ptBin][etaBin].effMC!=0):
+                            h2.SetBinContent(ix,iy, self.effList[ptBin][etaBin].effData      / self.effList[ptBin][etaBin].effMC)
+                        else: h2.SetBinContent(ix,iy, 0)
+                        if(averageMC==0):averageMC =1
                         h2.SetBinError  (ix,iy, self.effList[ptBin][etaBin].systCombined / averageMC )
                         if onlyError   == 0 :
                             h2.SetBinContent(ix,iy, self.effList[ptBin][etaBin].systCombined      / averageMC  )
@@ -299,7 +303,8 @@ class efficiencyList:
                             h2.SetBinContent(ix,iy, self.effList[ptBin][etaBin].effMC)
                             h2.SetBinError  (ix,iy, 0 )
                         elif onlyError == -1 :
-                            h2.SetBinContent(ix,iy, self.effList[ptBin][etaBin].effData      / self.effList[ptBin][etaBin].effMC)
+                            if(self.effList[ptBin][etaBin].effMC==0):h2.SetBinContent(ix,iy, 0)
+                            else  :h2.SetBinContent(ix,iy, self.effList[ptBin][etaBin].effData      / self.effList[ptBin][etaBin].effMC)
                             h2.SetBinError  (ix,iy, self.effList[ptBin][etaBin].systCombined / averageMC )
 
                         if onlyError   == 0 :
@@ -345,8 +350,12 @@ class efficiencyList:
                     aValue  = effAverage.effData
                     anError = effAverage.systCombined 
                     if doScaleFactor :
-                        aValue  = effAverage.effData      / effAverage.effMC
-                        anError = effAverage.systCombined / effAverage.effMC  
+                        if(effAverage.effMC==0):
+                            aValue=0
+                            anError =0
+                        else :
+                            aValue  = effAverage.effData      / effAverage.effMC
+                            anError = effAverage.systCombined / effAverage.effMC  
                     listOfGraphs[etaBin].append( {'min': ptBin[0], 'max': ptBin[1],
                                                   'val': aValue  , 'err': anError } ) 
                                                   
@@ -405,8 +414,12 @@ class efficiencyList:
                 aValue  = effAverage.effData
                 anError = effAverage.systCombined 
                 if typeGR == 1:
-                    aValue  = effAverage.effData      / effAverage.effMC
-                    anError = effAverage.systCombined / effAverage.effMC  
+                    if(effAverage.effMC==0):
+                        aValue=0
+                        anError=0
+                    else:
+                        aValue  = effAverage.effData      / effAverage.effMC
+                        anError = effAverage.systCombined / effAverage.effMC  
                 if typeGR == -1:
                     aValue  = effAverage.effMC
                     anError = 0#effAverage.errEffMC

@@ -59,7 +59,8 @@ tnpFitter::tnpFitter(TFile *filein, std::string histname   ) : _useMinos(false),
   /// MC histos are done between 50-130 to do the convolution properly
   /// but when doing MC fit in 60-120, need to zero bins outside the range
   for( int ib = 0; ib <= hPass->GetXaxis()->GetNbins()+1; ib++ )
-   if(  hPass->GetXaxis()->GetBinCenter(ib) <= 60 || hPass->GetXaxis()->GetBinCenter(ib) >= 120 ) {
+    //if(  hPass->GetXaxis()->GetBinCenter(ib) <= 60 || hPass->GetXaxis()->GetBinCenter(ib) >= 120 ) {
+    if(  hPass->GetXaxis()->GetBinCenter(ib) <= 70 || hPass->GetXaxis()->GetBinCenter(ib) >= 110 ) {
      hPass->SetBinContent(ib,0);
      hFail->SetBinContent(ib,0);
    }
@@ -71,8 +72,10 @@ tnpFitter::tnpFitter(TFile *filein, std::string histname   ) : _useMinos(false),
   RooDataHist rooFail("hFail","hFail",*_work->var("x"),hFail);
   _work->import(rooPass) ;
   _work->import(rooFail) ;
-  _xFitMin = 60;
-  _xFitMax = 120;
+  //_xFitMin = 60;
+  _xFitMin = 70;
+  //_xFitMax = 120;
+  _xFitMax = 110;
 }
 
 tnpFitter::tnpFitter(TH1 *hPass, TH1 *hFail, std::string histname  ) : _useMinos(false),_fixSigmaFtoSigmaP(false) {
@@ -84,8 +87,9 @@ tnpFitter::tnpFitter(TH1 *hPass, TH1 *hFail, std::string histname  ) : _useMinos
   /// MC histos are done between 50-130 to do the convolution properly
   /// but when doing MC fit in 60-120, need to zero bins outside the range
   for( int ib = 0; ib <= hPass->GetXaxis()->GetNbins()+1; ib++ )
-    if(  hPass->GetXaxis()->GetBinCenter(ib) <= 60 || hPass->GetXaxis()->GetBinCenter(ib) >= 120 ) {
-      hPass->SetBinContent(ib,0);
+    //if(  hPass->GetXaxis()->GetBinCenter(ib) <= 60 || hPass->GetXaxis()->GetBinCenter(ib) >= 120 ) {
+    if(  hPass->GetXaxis()->GetBinCenter(ib) <= 70 || hPass->GetXaxis()->GetBinCenter(ib) >= 110 ) {
+  hPass->SetBinContent(ib,0);
       hFail->SetBinContent(ib,0);
     }
   
@@ -96,8 +100,10 @@ tnpFitter::tnpFitter(TH1 *hPass, TH1 *hFail, std::string histname  ) : _useMinos
   RooDataHist rooFail("hFail","hFail",*_work->var("x"),hFail);
   _work->import(rooPass) ;
   _work->import(rooFail) ;
-  _xFitMin = 60;
-  _xFitMax = 120;
+  ///_xFitMin = 60;
+  _xFitMin = 70;
+  //_xFitMax = 120;
+  _xFitMax = 110;
   
 }
 
@@ -120,8 +126,8 @@ void tnpFitter::setWorkspace(std::vector<std::string> workspace) {
   _work->factory("FCONV::sigFail(x, sigPhysFail , sigResFail)");
   _work->factory(TString::Format("nSigP[%f,0.5,%f]",_nTotP*0.9,_nTotP*1.5));
   _work->factory(TString::Format("nBkgP[%f,0.5,%f]",_nTotP*0.1,_nTotP*1.5));
-  _work->factory(TString::Format("nSigF[%f,0.5,%f]",_nTotF*0.9,_nTotF*1.5));
-  _work->factory(TString::Format("nBkgF[%f,0.5,%f]",_nTotF*0.1,_nTotF*1.5));
+  _work->factory(TString::Format("nSigF[%f,1.0,%f]",_nTotF*0.9,_nTotF*1.5));
+  _work->factory(TString::Format("nBkgF[%f,0.5,%f]",_nTotF*0.15,_nTotF*1.5));
   _work->factory("SUM::pdfPass(nSigP*sigPass,nBkgP*bkgPass)");
   _work->factory("SUM::pdfFail(nSigF*sigFail,nBkgF*bkgFail)");
   _work->Print();			         
@@ -167,8 +173,11 @@ void tnpFitter::fits(bool mcTruth,string title) {
   //RooFitResult* resFail = pdfFail->fitTo(*_work->data("hFail"),Minos(_useMinos),SumW2Error(kTRUE),Save());
 
 
-  RooPlot *pPass = _work->var("x")->frame(60,120);
-  RooPlot *pFail = _work->var("x")->frame(60,120);
+  //RooPlot *pPass = _work->var("x")->frame(60,120);
+  //RooPlot *pFail = _work->var("x")->frame(60,120);
+  RooPlot *pPass = _work->var("x")->frame(70,110);
+  RooPlot *pFail = _work->var("x")->frame(70,110);
+
   pPass->SetTitle("passing probe");
   pFail->SetTitle("failing probe");
   

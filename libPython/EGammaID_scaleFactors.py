@@ -113,7 +113,7 @@ def EffiGraph1D(effDataList, effMCList, sfList ,nameout, xAxis = 'pT', yAxis = '
     listOfMC      = []
 
     xMin = 10
-    xMax = 500
+    xMax = 200
     if 'pT' in xAxis or 'pt' in xAxis:
         p1.SetLogx()
         p2.SetLogx()    
@@ -135,8 +135,8 @@ def EffiGraph1D(effDataList, effMCList, sfList ,nameout, xAxis = 'pT', yAxis = '
 
     sfminmax =  findMinMax( sfList )
     sfMin = sfminmax[0]
-#    sfMin = 0.94
-#    sfMax = 1.02
+    sfMin = 0.94
+    sfMax = 1.02
 
     for key in sorted(effDataList.keys()):
         grBinsEffData = effUtil.makeTGraphFromList(effDataList[key], 'min', 'max')
@@ -156,14 +156,17 @@ def EffiGraph1D(effDataList, effMCList, sfList ,nameout, xAxis = 'pT', yAxis = '
         grBinsEffData.SetLineColor(   graphColors[igr] )
         grBinsEffData.SetLineWidth(2) 
                 
-        grBinsEffData.GetHistogram().SetMinimum(effiMin)
-        grBinsEffData.GetHistogram().SetMaximum(effiMax)
+        #grBinsEffData.GetHistogram().SetMinimum(effiMin)
+        grBinsEffData.GetHistogram().SetMinimum(0.)
+        grBinsEffData.GetHistogram().SetMaximum(1.05)
+        #grBinsEffData.GetHistogram().SetMaximum(effiMax)
 
         grBinsEffData.GetHistogram().GetXaxis().SetLimits(xMin,xMax)
         grBinsSF.GetHistogram()     .GetXaxis().SetLimits(xMin,xMax)
-        grBinsSF.GetHistogram().SetMinimum(sfMin)
-        grBinsSF.GetHistogram().SetMaximum(sfMax)
-        
+        #grBinsSF.GetHistogram().SetMinimum(sfMin)
+        grBinsSF.GetHistogram().SetMinimum(0.8)
+        #grBinsSF.GetHistogram().SetMaximum(sfMax)
+        grBinsSF.GetHistogram().SetMaximum(1.2)
         grBinsSF.GetHistogram().GetXaxis().SetTitleOffset(1)
         if 'eta' in xAxis or 'Eta' in xAxis:
             grBinsSF.GetHistogram().GetXaxis().SetTitle("SuperCluster #eta")
@@ -294,14 +297,13 @@ def doEGM_SFs(filein, lumi, axis = ['pT','eta'] ):
         numbers = modifiedLine.split('\t')
 
         if len(numbers) > 0 and isFloat(numbers[0]):
-            print float(numbers[2])
-            print float(numbers[3])
             etaKey = ( float(numbers[0]), float(numbers[1]) )
-            ptKey  = ( float(numbers[2]), float(numbers[3]) )
-            
+            ptKey  = ( float(numbers[2]), min(500,float(numbers[3])) )
+        
             myeff = efficiency(ptKey,etaKey,
                                float(numbers[4]),float(numbers[5]),float(numbers[6] ),float(numbers[7] ),
-                               float(numbers[8]),float(numbers[9]),float(numbers[10]),float(numbers[11]) )
+                               -1,-1,-1,-1)
+                               #float(numbers[8]),float(numbers[9]),float(numbers[10]),float(numbers[11]) )
 #                           float(numbers[8]),float(numbers[9]),float(numbers[10]), -1 )
 
             effGraph.addEfficiency(myeff)
